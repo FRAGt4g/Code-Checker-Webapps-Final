@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <title>Python Flask ReplAuth</title>
+  <script src="https://replit.com/public/js/repl-auth-v2.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>
+    Code Checker!
+  </h1>
+  <p>
+    This is a simple code checker that will check if your code is correct.
+  </p>
+  <div id='submission'>
+    <h1>
+        Input file here:
+    </h1>
+    <form action="/submit" method="post" enctype="multipart/form-data">    
+      <label> AISD #: </label>
+      <input name="ID" type="number">
+      
+      <br>
+      
+      <label> Inputed Files:  </label>
+      <input name="files[]" type="file" accept=".cpp, .h" multiple>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <h1>
+    Results: {{ message }}
+  </h1>
+  <!-- <div id='run'>
+    <h1>
+      Regex expression for the output of all submissions:
+    </h1>
+    <form action="/run" method="post" enctype="multipart/form-data">
+      <input name="requirements" type="text">
+      <button type="submit">Submit</button>
+    </form>  
+  </div> -->
+</body>
+</html>

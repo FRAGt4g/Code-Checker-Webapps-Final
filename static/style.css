@@ -1,0 +1,87 @@
+body {
+  background: rgb(50, 60, 90);
+  width: 100vw;
+  color: white;
+}
+
+h1 {
+  font-size: 30px;
+}
+
+p {
+  font-size: 20px;
+  margin: 0;
+  padding: 0;
+  margin-top: 3px;
+}
+
+body>h1, body>p {
+  text-align: center;
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+div {
+  width: 95vw;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+div>h1 {
+  margin-bottom: 20px;
+  display: block;
+
+  font-weight: 700;
+  color: white; 
+}
+
+button[type="submit"] {
+  display: block;
+
+  width: 300px;
+  height: 50px;
+  
+  padding: 10px;
+  margin: 10px;
+  margin-top: 70px;
+  
+  background: rgb(50, 60, 90);
+  border: 1px solid white;
+  border-radius: 20px;
+  
+  color: white;
+  font-size: 20px;
+  
+  cursor: pointer;
+  
+  transition: 0.1s all ease-in-out;
+}
+
+button[type="submit"]:hover {
+  background: rgb(63, 76, 115);
+}
+
+form input[type='text'], form input[type='number'] {
+  padding: 10px;
+  margin: 10px;
+  
+  background: rgb(50, 60, 90, 0.4);
+  border: 1px solid white;
+  border-radius: 10px;
+  
+  color: white;
+  font-size: 20px;
+  
+  cursor: pointer;
+  
+  transition: 0.1s all ease-in-out;
+}
+
+label {
+  font-size: 25px;
+  
+}

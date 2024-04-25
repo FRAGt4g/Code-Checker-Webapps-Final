@@ -1,0 +1,29 @@
+GOAL: quickyl get feedback back about submission and grade for it
+
+types of test:
+  catch2 (Tests files)
+  input/output
+
+have the ability to use preinstaled files/static and project required files
+
+zip files
+  how to handle breaking zip
+  does it handle subdirectories?
+
+error reporting (compile vs runtime)
+
+is importing libraries a problem?
+  regex flags for imports(?)
+
+uploading/downloading/how to hold files?
+
+input text versions of the files?
+
+version control(?)
+  multiple submissions
+
+reach: check for dangerous files
+
+*** ease of use ***
+
+does the teacher/student view look different?
