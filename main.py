@@ -22,65 +22,59 @@ def submit():
   if files[0].filename == '':
     return redirect(url_for('root'))
 
-  else:
-    path = create_folder_with_suffix('files', f'S{request.form["ID"]}')
-    for file in files:
-      fName = str(file.filename)
-      with open(os.path.join(path, fName), "wb") as f:
-        f.write(file.stream.read())
+  path = create_folder_with_suffix('files', f'S{request.form["ID"]}')
+  for file in files:
+    fName = str(file.filename)
+    with open(os.path.join(path, fName), "wb") as f:
+      f.write(file.stream.read())
 
-  output = runSubmission_txt(files)
-  print(output)
-  return render_template('index.html', message=str())
+  output = runSubmission_txt(path)
+  if (output[0]):
+    print(f"Passed: [\n\t{output[1]}]")
+  
+  return render_template('index.html', message=str(output[1]))
 
-def runSubmission_txt(files):
+def runSubmission_txt(dir):
   conditions = compile_conditions()
   print("Requirement: " + conditions)
-  output = run_code(files)
-  passed = re.search(conditions, output)
-  return passed
-
-@app.route("/run", methods=["POST"])
-def runSubmissions():
-  print(os.path.join('files', id) for id in os.listdir('files')) 
-  outputs = { 
-    id: run_code(os.path.join('files', id)) for id in os.listdir('files') 
-  }
-  passed = { 
-    id: outputs[id] for id in outputs if re.search(request.form["requirements"], outputs[id])
-  }
-
-  results = [str(outputs[id]) for id in outputs]
-  print(results)
+  output = run_code(dir)
+  print("Result: " + str(output))
+  return (bool(re.search(conditions, output)), output)
 
 
-  print('outputs: ' + str(outputs))
-  print('who passed: ' + str(passed))
-  return redirect(url_for('root'))
-
-
-
-def run_code(source_files):
-  print('source files: ' + str(source_files))
+def run_code(dir):
+  print('dir: ' + str(dir))
   # Check if there are both C++ and Java files
-  has_cpp = any(file.filename.endswith('.cpp') for file in source_files)
-  has_java = any(file.filename.endswith('.java') for file in source_files)
+  file_dirs = os.listdir(dir)
+  has_cpp = any(filename.endswith('.cpp') for filename in file_dirs)
+  has_java = any(filename.endswith('.java') for filename in file_dirs)
 
   if has_cpp and has_java:
     return "Mix of C++ and Java files. Only one type of source files should be provided."
 
   elif has_cpp:
-    return run_cpp(source_files)
+    return run_cpp(dir)
 
   elif has_java:
-    return run_java(source_files)
+    return run_java(dir)
     
   return "No useable files found. Please specify a different directory or add files."
 
-def run_cpp(source_files):
+def run_cpp(dir):
+
+  print('dir: ' + str(dir))
+  print('files: ' + str(os.listdir(dir)))
+  
   # Compile all C++ source files into a single executable
-  compilation_command = ['g++', '-o', 'output'] + source_files
-  compilation_process = subprocess.Popen(compilation_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  compilation_command = ['g++', '-o', 'output'] + [
+    os.path.join(dir, file_dir) for file_dir in os.listdir(dir)
+  ]
+  
+  compilation_process = subprocess.Popen(
+    compilation_command, 
+    stdout=subprocess.PIPE, 
+    stderr=subprocess.PIPE
+  )
   compilation_output, compilation_errors = compilation_process.communicate()
 
   if compilation_errors:
@@ -98,9 +92,9 @@ def run_cpp(source_files):
   # Return the output of the execution
   return execution_output.decode('utf-8')
 
-def run_java(source_files):
+def run_java(dir):
   # Compile all Java source files into bytecode
-  compilation_command = ['javac'] + source_files
+  compilation_command = ['javac'] + os.listdir(dir)
   compilation_process = subprocess.Popen(compilation_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   compilation_output, compilation_errors = compilation_process.communicate()
 
