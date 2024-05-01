@@ -5,12 +5,14 @@ import re  # for regular expressions
 
 from flask import Flask, redirect, render_template, request, url_for  # you know this one
 
+from conditions import Lab_Requirements, Condition
+
 app = Flask(__name__)
 
 @app.route('/')
 def root():
   return render_template('index.html')
-
+  
 @app.route('/submit', methods=['POST'])
 def submit():
   if 'files[]' not in request.files:
@@ -28,18 +30,22 @@ def submit():
     with open(os.path.join(path, fName), "wb") as f:
       f.write(file.stream.read())
 
-  output = runSubmission_txt(path)
-  if (output[0]):
-    print(f"Passed: [\n\t{output[1]}]")
+  results = runSubmission_txt(path)
+  print(f"Grade would be a { results[0][0] }%")
+  print("Problems: ")
+  for fault in results[0][1]:
+    print(f"\t{fault[0]}: {str(fault[1])}")
   
-  return render_template('index.html', message=str(output[1]))
+  return render_template('index.html', message=str(results[1]))
 
 def runSubmission_txt(dir):
   conditions = compile_conditions()
   print("Requirement: " + conditions)
   output = run_code(dir)
   print("Result: " + str(output))
-  return (bool(re.search(conditions, output)), output)
+
+  requirements = Lab_Requirements('conditions.txt')
+  return (requirements.passedLevel(output), output)
 
 
 def run_code(dir):

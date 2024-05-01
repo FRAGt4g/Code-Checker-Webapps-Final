@@ -1,1 +1,13 @@
-Hello
+#Project: LASA_ALLOC
+
+@80:
+contains: Hello
+starts: H
+ends: !
+
+@90:
+starts: Hello
+contains: ,
+
+@100:
+equals: Hello, world!
