@@ -36,7 +36,7 @@ def submit():
   for fault in results[0][1]:
     print(f"\t{fault[0]}: {str(fault[1])}")
   
-  return render_template('index.html', message=str(results[1]))
+  return render_template('index.html', results=results)
 
 def runSubmission_txt(dir):
   conditions = compile_conditions()

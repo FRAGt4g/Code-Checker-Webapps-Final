@@ -28,8 +28,18 @@
     </form>
   </div>
   <h1>
-    Results: {{ message }}
+    Grade would be a {{ results[0][0]}}%
   </h1>
+  <div>
+    Faults:
+    <ul>
+      {% for fault in results[0] %}
+        <li>
+          {{ fault }}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
   <!-- <div id='run'>
     <h1>
       Regex expression for the output of all submissions:
