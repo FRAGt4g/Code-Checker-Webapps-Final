@@ -25,6 +25,7 @@ output = subprocess.run(['./output'])
 
 @app.route('/')
 def root():
+  print("Hello world!")
   print(output)
   
   return render_template('index.html', results=None)
