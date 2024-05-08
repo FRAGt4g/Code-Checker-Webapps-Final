@@ -31,7 +31,6 @@ class Condition:
   #Throws an error if the type is not valid
   def toregex(self):
     if self.type in self.regex_patterns:
-      print(self.regex_patterns[str(self.type)].replace('___' , self.value))
       return self.regex_patterns[str(self.type)].replace('___' , self.value)
 
     raise Exception("Invalid condition type")
@@ -69,7 +68,12 @@ class Lab_Requirements:
         #Adding new condition to current grade level.
           #The text must be spliced apart first around the ': '. YOU MUST INCLUDE THAT SPACE BETWEEN THE COLON AND THE CONDITION.
           #The left hand side is the type of condition. The right hand side is the value of the condition.
-        self.levels[current_grade_level].append(Condition(line.split(': ')[0], line.split(': ')[1][:-1]))
+        type, value = line.split(': ')
+        if value[-1] == '\n': 
+          value = value[:-1]
+
+        input = Condition(type, value)
+        self.levels[current_grade_level].append(input)
 
   #An override for str(Lab_Requirements) that returns the name of the project followed by each grade level and its conditions
   def __str__(self):
@@ -93,7 +97,11 @@ class Lab_Requirements:
         if not re.search(condition.toregex(), output):
           failures.append((level, condition))
           failed_at_level = True
-          break
       if not failed_at_level:
         return (level, failures)
-    return (0, failures)
+        
+    return (0, failures) #Failed at least one condition at every grade level
+
+  @staticmethod
+  def fault_to_string(fault):
+      return f"What is required: { str(fault[1]) }. Grade level: { fault[0] }"

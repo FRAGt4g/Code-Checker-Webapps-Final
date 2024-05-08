@@ -6,12 +6,28 @@ import re  # for regular expressions
 from flask import Flask, redirect, render_template, request, url_for  # you know this one
 
 from conditions import Lab_Requirements, Condition
+import GoogleSheetsConnection
 
 app = Flask(__name__)
 
+class Submission_Result:
+  grade = 0
+  failures = []
+  output = ""
+
+  def __init__(self, grade, failures, output):
+    self.grade = grade
+    self.failures = failures
+    self.output = output
+
+
+output = subprocess.run(['./output'])
+
 @app.route('/')
 def root():
-  return render_template('index.html')
+  print(output)
+  
+  return render_template('index.html', results=None)
   
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -24,28 +40,39 @@ def submit():
   if files[0].filename == '':
     return redirect(url_for('root'))
 
-  path = create_folder_with_suffix('files', f'S{request.form["ID"]}')
+  path, attempt_number = create_folder_with_suffix('files', f'S{request.form["ID"]}')
   for file in files:
     fName = str(file.filename)
     with open(os.path.join(path, fName), "wb") as f:
       f.write(file.stream.read())
 
   results = runSubmission_txt(path)
-  print(f"Grade would be a { results[0][0] }%")
+  
+  GoogleSheetsConnection.writeSubmission("LASA_ALLOC", [
+    request.form['ID'], #Id
+    results.grade, #Grade
+    attempt_number if attempt_number != 0 else 1, #Attempt number
+    str([file_data.filename for file_data in files]), #Files
+    GoogleSheetsConnection.to_sheet_cell(results.failures), #Problems
+    results.output #Output
+  ])
+  
+  print(f"Grade would be a { results.grade }%")
   print("Problems: ")
-  for fault in results[0][1]:
+  for fault in results.failures:
     print(f"\t{fault[0]}: {str(fault[1])}")
   
   return render_template('index.html', results=results)
 
 def runSubmission_txt(dir):
-  conditions = compile_conditions()
-  print("Requirement: " + conditions)
   output = run_code(dir)
-  print("Result: " + str(output))
+  print("****Code output****: " + str(output))
 
   requirements = Lab_Requirements('conditions.txt')
-  return (requirements.passedLevel(output), output)
+  print("----------------------Done compiling conditions----------------------")
+  print(requirements)
+  checks = requirements.passedLevel(output)
+  return Submission_Result(checks[0], checks[1], output)
 
 
 def run_code(dir):
@@ -67,14 +94,8 @@ def run_code(dir):
   return "No useable files found. Please specify a different directory or add files."
 
 def run_cpp(dir):
-
-  print('dir: ' + str(dir))
-  print('files: ' + str(os.listdir(dir)))
-  
   # Compile all C++ source files into a single executable
-  compilation_command = ['g++', '-o', 'output'] + [
-    os.path.join(dir, file_dir) for file_dir in os.listdir(dir)
-  ]
+  compilation_command = ['g++', '-o', 'output'] + ['-std=c++11'] + [os.path.join(dir, file_dir) for file_dir in os.listdir(dir) if file_dir.endswith('.cpp')]
   
   compilation_process = subprocess.Popen(
     compilation_command, 
@@ -82,46 +103,43 @@ def run_cpp(dir):
     stderr=subprocess.PIPE
   )
   compilation_output, compilation_errors = compilation_process.communicate()
-
+  
   if compilation_errors:
     # Compilation failed, return the error message
     return "Compilation Error:\n" + compilation_errors.decode('utf-8')
-
+  
   # Run the compiled executable
   execution_process = subprocess.Popen(['./output'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   execution_output, execution_errors = execution_process.communicate()
-
+  
   if execution_errors:
     # Execution failed, return the error message
     return "Execution Error:\n" + execution_errors.decode('utf-8')
-
+  
   # Return the output of the execution
   return execution_output.decode('utf-8')
 
 def run_java(dir):
-  # Compile all Java source files into bytecode
-  compilation_command = ['javac'] + os.listdir(dir)
-  compilation_process = subprocess.Popen(compilation_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  compilation_output, compilation_errors = compilation_process.communicate()
+  print("running java tester. Directory is: " + dir)
 
-  if compilation_errors:
-      # Compilation failed, return the error message
-      return "Compilation Error:\n" + compilation_errors.decode('utf-8')
+  compilation_command = ["javac"] + [file_dir for file_dir in os.listdir(dir)]
+  subprocess.run(compilation_command, cwd=dir, check=True)
 
-  # Find the main Java file to execute
-  main_java_file = next(file for file in source_files if file.endswith('.java') and 'Main' in file)
-
-  # Run the compiled Java program
-  execution_process = subprocess.Popen(['java', main_java_file[:-5]], cwd=project_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  execution_output, execution_errors = execution_process.communicate()
-
-  if execution_errors:
-      # Execution failed, return the error message
-      return "Execution Error:\n" + execution_errors.decode('utf-8')
-
-  # Return the output of the execution
-  return execution_output.decode('utf-8')
-
+  run_command = ['java'] + [
+    class_files.split('.')[0] for class_files in os.listdir(dir) if class_files.endswith('.class')
+  ]
+  output = subprocess.run(
+    run_command,
+    cwd=dir, 
+    text=True, 
+    stdout=subprocess.PIPE, 
+    stderr=subprocess.PIPE
+  )
+  print("java output: " + str(output))
+  if (output.returncode != 0):
+    return "Execution Errors: " + output.stderr
+  
+  return output.stdout
 
 
 def open_file_with_suffix(filename, mode='wb'):
@@ -136,18 +154,18 @@ def create_folder_with_suffix(base_dir, sub_dir):
   base = os.path.join(base_dir, sub_dir)
   if not os.path.exists(base):
     os.makedirs(base)
-    return str(base)
+    return (str(base), 0)
   
   index = 2
-  while index < 10: #To ensure no there will never be more than 10 submissions from one id
+  while index < 20: #To ensure no there will never be more than 20 submissions from one id
     folder_name = f"{sub_dir} ({index})"
     folder_path = os.path.join(base_dir, folder_name)
     if not os.path.exists(folder_path):
       os.makedirs(folder_path)
-      return str(folder_path)
+      return (str(folder_path), index)
     index += 1
 
-  return "Reached over 10 folders"
+  return ("REACHED OVER 10 FILES", -1)
 
 def compile_conditions(filename='conditions.txt'):
   with open(filename, 'r') as f:

@@ -23,23 +23,31 @@
       <br>
       
       <label> Inputed Files:  </label>
-      <input name="files[]" type="file" accept=".cpp, .h" multiple>
+      <input name="files[]" type="file" accept=".cpp, .h, .java" multiple>
       <button type="submit">Submit</button>
     </form>
   </div>
   <h1>
-    Grade would be a {{ results[0][0]}}%
+    Grade would be a {{ results.grade }}%
   </h1>
   <div>
-    Faults:
+    <h2>
+      Conditions failed:
+    </h2>
     <ul>
-      {% for fault in results[0] %}
-        <li>
-          {{ fault }}
-        </li>
+      
+      {% for fault in results.failures %}
+      <li>
+        <p>
+          Grade level: {{ fault[0] }}
+          <br>
+          Requirement: {{ fault[1] }}
+        </p>
+      </li>
       {% endfor %}
     </ul>
   </div>
+  {{ results.output }}
   <!-- <div id='run'>
     <h1>
       Regex expression for the output of all submissions:
