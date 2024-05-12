@@ -2,10 +2,11 @@ import io  # for reading files
 import os  # for using operating system functionality
 import subprocess  # for running files
 import re  # for regular expressions
+import json
 
 from flask import Flask, redirect, render_template, request, url_for  # you know this one
 
-from conditions import Lab_Requirements, Condition
+from Conditions import Lab_Requirements, Condition
 import GoogleSheetsConnection
 
 app = Flask(__name__)
@@ -20,15 +21,17 @@ class Submission_Result:
     self.failures = failures
     self.output = output
 
-
-output = subprocess.run(['./output'])
+labs = Lab_Requirements.compileAllLabConditions('conditions.txt')
+print("----------------------Done compiling conditions----------------------")
+print(labs)
 
 @app.route('/')
 def root():
   print("Hello world!")
-  print(output)
-  
-  return render_template('index.html', results=None)
+  print([labs[lab].filetypes for lab in labs])
+  return render_template('index.html', results=None, labs=labs, js_labs=json.dumps({
+    lab: labs[lab].to_dict() for lab in labs
+  }))
   
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -47,9 +50,9 @@ def submit():
     with open(os.path.join(path, fName), "wb") as f:
       f.write(file.stream.read())
 
-  results = runSubmission_txt(path)
+  results = runFiles(path, request.form["lab name"])
   
-  GoogleSheetsConnection.writeSubmission("LASA_ALLOC", [
+  GoogleSheetsConnection.writeSubmission(request.form["lab name"], [
     request.form['ID'], #Id
     results.grade, #Grade
     attempt_number if attempt_number != 0 else 1, #Attempt number
@@ -65,18 +68,15 @@ def submit():
   
   return render_template('index.html', results=results)
 
-def runSubmission_txt(dir):
-  output = run_code(dir)
+def runFiles(dir, lab_name):
+  output = runCode(dir)
   print("****Code output****: " + str(output))
 
-  requirements = Lab_Requirements('conditions.txt')
-  print("----------------------Done compiling conditions----------------------")
-  print(requirements)
-  checks = requirements.passedLevel(output)
+  checks = labs[lab_name].passedLevel(output)
   return Submission_Result(checks[0], checks[1], output)
 
 
-def run_code(dir):
+def runCode(dir):
   print('dir: ' + str(dir))
   # Check if there are both C++ and Java files
   file_dirs = os.listdir(dir)

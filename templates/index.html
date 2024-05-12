@@ -4,6 +4,12 @@
   <title>Python Flask ReplAuth</title>
   <script src="https://replit.com/public/js/repl-auth-v2.js"></script>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <script>
+    alert(JSON.parse('{{ js_labs }}'))
+    const python_labs = JSON.parse('{{ js_labs }}')
+    alert(python_labs)
+  </script>
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
 </head>
 <body>
   <h1>
@@ -21,9 +27,19 @@
       <input name="ID" type="number">
       
       <br>
-      
+      <label for="lab name">Lab name</label>
+      <input name="lab name" type="text">
+
+      <select name="lab name" id="labs" onchange="updateLab(this)">
+        {% for lab in labs %}
+          <option value="{{ lab }}">{{lab}} {{labs[lab].filetypes}}</option>
+        {% endfor %}
+      </select>
+
+      <br>
+
       <label> Inputed Files:  </label>
-      <input name="files[]" type="file" accept=".cpp, .h, .java" multiple>
+      <input name="files[]" type="file" id="files" multiple>
       <button type="submit">Submit</button>
     </form>
   </div>
