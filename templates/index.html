@@ -6,7 +6,7 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h1>
+  <!--<h1>
     Code Checker!
   </h1>
   <p>
@@ -47,7 +47,57 @@
       {% endfor %}
     </ul>
   </div>
-  {{ results.output }}
+  {{ results.output }} -->
+
+  <div class="container">
+    <h1>LASA CS Code Checker</h1>
+    <form>
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" name="firstName" required>
+      
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" name="lastName" required>
+      
+      <label for="email">AISD #</label>
+      <input name="ID" type="number">
+      
+      <label for="period">Period Number</label>
+      <select id="period" name="period">
+        <option value="A1">A1 Adv CS</option>
+        <option value="A2">A2 Adv CS</option>
+        <option value="A3">A3 Web Apps</option>
+        <option value="B6">B6 Web Apps</option>
+        <option value="B7">B7 Adv CS</option>
+        <option value="B8">B8 AP CS</option>
+      </select>
+      
+      <label for="codeFiles" style="display: inline-block;">Code Files</label> &nbsp
+      <input name="files[]" type="file" accept=".cpp, .h, .java" style="display: inline-block;" multiple>
+      <button class="upload-btn" type="submit">Submit</button>
+    </form>
+
+    <h1>
+      Grade would be a {{ results.grade }}%
+    </h1>
+    <div class="output">
+      <h2>
+        Conditions failed:
+      </h2>
+      <ul>
+
+        {% for fault in results.failures %}
+        <li>
+          <p>
+            Grade level: {{ fault[0] }}
+            <br>
+            Requirement: {{ fault[1] }}
+          </p>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {{ results.output }}
+  </div>
   <!-- <div id='run'>
     <h1>
       Regex expression for the output of all submissions:

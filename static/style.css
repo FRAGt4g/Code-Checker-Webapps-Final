@@ -2,10 +2,12 @@ body {
   background: rgb(50, 60, 90);
   width: 100vw;
   color: white;
+  font-family: Arial, sans-serif;
 }
 
 h1 {
   font-size: 30px;
+  text-align: center;
 }
 
 p {
@@ -23,7 +25,6 @@ body>h1, body>p {
 }
 
 div {
-  width: 95vw;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
@@ -40,18 +41,19 @@ div>h1 {
 }
 
 button[type="submit"] {
+  margin: 0 auto;
+
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
   display: block;
 
   width: 300px;
   height: 50px;
   
-  padding: 10px;
-  margin: 10px;
-  margin-top: 70px;
-  
   background: rgb(50, 60, 90);
-  border: 1px solid white;
-  border-radius: 20px;
+  /*border: 1px solid white;
+  border-radius: 20px;*/
   
   color: white;
   font-size: 20px;
@@ -66,8 +68,10 @@ button[type="submit"]:hover {
 }
 
 form input[type='text'], form input[type='number'] {
+  margin-bottom: 15px;
   padding: 10px;
-  margin: 10px;
+  width: 60vw;
+  margin: 0 auto;
   
   background: rgb(50, 60, 90, 0.4);
   border: 1px solid white;
@@ -83,5 +87,28 @@ form input[type='text'], form input[type='number'] {
 
 label {
   font-size: 25px;
-  
+}
+
+.container {
+    max-width: 80vw;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+form {
+    margin-top: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.output {
+    font-weight: bold;
+    text-align: center;
 }
