@@ -3,6 +3,8 @@
 <head>
   <title>Python Flask ReplAuth</title>
   <script src="https://replit.com/public/js/repl-auth-v2.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
   <script>
     alert(JSON.parse('{{ js_labs }}'))
@@ -12,58 +14,80 @@
   <script src="{{ url_for('static', filename='main.js') }}"></script>
 </head>
 <body>
-  <h1>
-    Code Checker!
-  </h1>
-  <p>
-    This is a simple code checker that will check if your code is correct.
-  </p>
+  <div class="header">
+    <h1>
+      Code Checker!
+    </h1>
+    <p>
+      This is a simple code checker that will check if your code is correct.
+    </p>
+  </div>
+  
   <div id='submission'>
     <h1>
-        Input file here:
+        Submit Your Code
     </h1>
-    <form action="/submit" method="post" enctype="multipart/form-data">    
-      <label> AISD #: </label>
-      <input name="ID" type="number">
+    <form action="/submit" method="post" enctype="multipart/form-data"> 
       
-      <br>
-      <label for="lab name">Lab name</label>
-      <input name="lab name" type="text">
+      <div class="primary">
+        <label> AISD #: </label>
+        <input name="ID" type="number" placeholder="100...">
 
-      <select name="lab name" id="labs" onchange="updateLab(this)">
-        {% for lab in labs %}
-          <option value="{{ lab }}">{{lab}} {{labs[lab].filetypes}}</option>
-        {% endfor %}
-      </select>
+        <br>
+        <label for="lab name">Lab name: </label>
+        <select name="lab name" id="labs" onchange="updateLab(this)">
+          {% for lab in labs %}
+            <option value="{{ lab }}">{{lab}} {{labs[lab].filetypes}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <br>
+
+      <div class="secondary">
+        <label for="period">Period Number: </label>
+        <div class="buttons">
+          <button type="button" id="toggleButton" onclick="toggleColor(this)"> A1 Adv CS </button>
+          <button type="button" id="toggleButton" onclick="toggleColor(this)"> A2 Adv CS </button>
+          <button type="button" id="toggleButton" onclick="toggleColor(this)"> A3 Web Apps </button>
+          <button type="button" id="toggleButton" onclick="toggleColor(this)"> B6 Web Apps </button>
+          <button type="button" id="toggleButton" onclick="toggleColor(this)"> B7 Adv CS </button>
+          <button type="button" id="toggleButton" onclick="toggleColor(this)"> B8 AP CS </button>
+      </div>
 
       <br>
 
       <label> Inputed Files:  </label>
       <input name="files[]" type="file" id="files" multiple>
       <button type="submit">Submit</button>
+        
     </form>
   </div>
-  <h1>
-    Grade would be a {{ results.grade }}%
-  </h1>
-  <div>
-    <h2>
-      Conditions failed:
-    </h2>
-    <ul>
-      
-      {% for fault in results.failures %}
-      <li>
-        <p>
-          Grade level: {{ fault[0] }}
-          <br>
-          Requirement: {{ fault[1] }}
-        </p>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-  {{ results.output }}
+  <div class="output">
+    <h1>
+      Grade would be a {{ results.grade }}%
+    </h1>
+    <div>
+      <h2>
+        Conditions failed:
+      </h2>
+      <ul>
+  
+        {% for fault in results.failures %}
+        <li>
+          <p>
+            Grade level: {{ fault[0] }}
+            <br>
+            Requirement: {{ fault[1] }}
+          </p>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {{ results.output }}
+  <div> 
+  
+  
   <!-- <div id='run'>
     <h1>
       Regex expression for the output of all submissions:

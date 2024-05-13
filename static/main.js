@@ -3,3 +3,7 @@ function updateLab(e) {
     alert(python_labs)
     file_input.accept = '.cpp'
 }
+
+function toggleColor(button) {
+    button.classList.toggle("toggled");
+}
