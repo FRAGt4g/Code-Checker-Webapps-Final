@@ -11,7 +11,6 @@ LASACC is short for "LASA Code Checker." This program will herein be refered to 
 - Conditions failed (algorithm)
 
 ### Tools Used
-- Python
 - Python Flask
 - HTML
 - CSS
