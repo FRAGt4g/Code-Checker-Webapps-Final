@@ -8,16 +8,17 @@ LASA_CC (LASA Code Checker) is our Web Design and Applications final project foc
 
 ### Tools Used
 - Python
-	- Libraries:
-	- Flask (for connecting to the website)
-	- subprocess (for running terminal level commands)
-	- gspread (for connecting to google sheets)
-	- oatuh2client (for connecting to google sheets)
-	- re (for using Regular expressions for checking requirements)
-	- json (for translating python variables into JSON format to be used in javascript functions)
 - HTML
 - CSS
 - JS
+
+#### Libraries used
+- Flask (for connecting to the website)
+- subprocess (for running terminal level commands)
+- gspread (for connecting to google sheets)
+- oatuh2client (for connecting to google sheets)
+- re (for using Regular expressions for checking requirements)
+- json (for translating python variables into JSON format to be used in javascript functions)
 
 ## Structure
 ```
