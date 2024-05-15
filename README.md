@@ -20,6 +20,9 @@ LASA_CC (LASA Code Checker) is our Web Design and Applications final project foc
 - re (for using Regular expressions for checking requirements)
 - json (for translating python variables into JSON format to be used in javascript functions)
 
+## How to write an assignment into a .txt file
+Lorem ipsum....
+
 ## Structure
 ```
 .
