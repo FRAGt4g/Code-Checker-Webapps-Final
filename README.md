@@ -21,7 +21,7 @@ LASA_CC (LASA Code Checker) is our Web Design and Applications final project foc
 - json (for translating python variables into JSON format to be used in javascript functions)
 
 ## How to start using LASA_CC
-###Check System installments
+### Check System installments
 The program is meant to run serverside and therefore this will become obsolete but until then in order for the program to work you must have python and all the aforementioned libraries installed. You must also have GNU compiler and Java VM installed for compiling along with running the C++ and Java files.
 
 ### Create a sheet (or disable the service)
